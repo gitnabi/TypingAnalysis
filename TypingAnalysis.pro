@@ -41,6 +41,10 @@ linux {
 }
 
 macx {
+  CONFIG += sdk_no_version_check
+  LIBS += -framework Carbon
+  LIBS += -framework CoreFoundation
+  LIBS += -framework CoreGraphics
   macx-g++*{
   }
 
@@ -132,10 +136,20 @@ win32 {
 
 macx {
     HEADERS += \
-    Keyboard/Macos/KeyboardListenerMac.h
+    Keyboard/Macos/KeyIDMacOS.h \
+    Keyboard/Macos/KeyPositionMacOS.h \
+    Keyboard/Macos/KeyTextMaker.h \
+    Keyboard/Macos/KeyboardListenerMacOS.h \
+    Keyboard/Macos/MacOSKeyboardAPI.h \
+    Keyboard/Macos/ShifterInfo.h \
 
     SOURCES += \
-    Keyboard/Macos/KeyboardListenerMac.cpp
+    Keyboard/Macos/KeyIDMacOS.cpp \
+    Keyboard/Macos/KeyPositionMacOS.cpp \
+    Keyboard/Macos/KeyTextMaker.cpp \
+    Keyboard/Macos/KeyboardListenerMacOS.cpp \
+    Keyboard/Macos/MacOSKeyboardAPI.cpp \
+    Keyboard/Macos/ShifterInfo.cpp \
 }
 
 linux {

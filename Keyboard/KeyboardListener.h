@@ -17,12 +17,12 @@ using CKeyboardListenerImpl = NSWindows::CKeyboardListenerWinImpl;
 #endif // Q_OS_WIN
 
 #ifdef Q_OS_MACOS
-#include "Macos/KeyboardListenerMac.h"
+#include "Macos/KeyboardListenerMacOS.h"
 
 namespace NSApplication {
 namespace NSKeyboard {
 namespace NSKeyboardListenerDetail {
-using CKeyboardListenerImpl = NSMacos::CKeyboardListenerMacImpl;
+using CKeyboardListenerImpl = NSMacOS::CKeyboardListenerMacOSImpl;
 
 } // namespace NSKeyboardListenerDetail
 } // namespace NSKeyboard

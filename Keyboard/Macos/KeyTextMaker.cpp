@@ -1,0 +1,51 @@
+#include "KeyTextMaker.h"
+
+namespace NSApplication {
+namespace NSKeyboard {
+namespace NSMacOS {
+
+QString CKeyTextMaker::get(const CVKCode VKCode, CGEventRef Event) {
+  UniCharCount ActualStringLength;
+  if (CMacOSKeyboardAPI::isMainRunLoop()) {
+    if (CMacOSKeyboardAPI::isShifter(VKCode)) { return ""; }
+
+    CInputSourcePtr CurrentKeyboardLayoutInputSource(
+        CMacOSKeyboardAPI::copyCurrentKeyboardLayoutInputSource());
+    if (!CurrentKeyboardLayoutInputSource.get()) {
+      throw std::runtime_error("Failed to copy KeyboardLayoutInputSource");
+    }
+
+    if (CMacOSKeyboardAPI::isEqual(CurrentKeyboardLayoutInputSource.get(),
+                                   KeyboardLayoutInputSource_.get())       == false) {
+      DeadKeyState_ = 0;
+    }
+    KeyboardLayoutInputSource_ = std::move(CurrentKeyboardLayoutInputSource);
+
+    const UCKeyboardLayout* KeyboardLayout =
+        CMacOSKeyboardAPI::getCurrentKeyboardLayout(KeyboardLayoutInputSource_.get());
+    if (KeyboardLayout == NULL) {
+       throw std::runtime_error("Failed to get KeyboardLayout");
+    }
+
+    ActualStringLength =
+        CMacOSKeyboardAPI::getUnicodeStringFromMainRunLoop(KeyboardLayout, VKCode, &DeadKeyState_, Text_);
+  } else {
+    ActualStringLength = CMacOSKeyboardAPI::getUnicodeString(Event, Text_);
+  }
+  return getPrintableText(QString::fromUtf16(Text_, ActualStringLength));
+}
+
+QString CKeyTextMaker::getPrintableText(QString&& Text) const {
+  if (Text.size() == 0 || CMacOSKeyboardAPI::getShifterState(::kVK_Command)) {
+    return "";
+  }
+  if (Text.back().isPrint()) {
+    return std::move(Text);
+  }
+  Text.resize(Text.size() - 1);
+  return std::move(Text);
+}
+
+} // namespace NSMacOS
+} // namespace NSKeyboard
+} // namespace NSApplication
